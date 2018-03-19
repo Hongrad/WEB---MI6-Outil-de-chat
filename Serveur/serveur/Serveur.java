@@ -28,9 +28,9 @@ public class Serveur {
                 serviceBd = (ServiceBd) registry.lookup("ServiceBd");
             } catch (Exception e){
                 System.out.println("Erreur : La récupération du service 'ServiceBd' a échoué !");
-                System.out.println("Nouvelle essai dans 5 sec ...");
+                System.out.println("Nouvelle essai dans 10 sec ...");
                 try {
-                    TimeUnit.SECONDS.sleep(5);
+                    TimeUnit.SECONDS.sleep(10);
                 } catch (InterruptedException ex) {}
             }
         }
