@@ -1,6 +1,8 @@
 package client;
 
 import java.util.Properties;
+import java.util.Scanner;
+
 import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 import serviceServeur.ServiceServeurHelper;
@@ -9,8 +11,15 @@ import serviceServeur.ServiceServeurHelper;
  * 
  */
 public class Client {
+	static final String PREFIX_FOR_CMD = "/";
+    static final String CREATE_SERVER = PREFIX_FOR_CMD + "create ";
+    static final String LIST_AVAILABLE_SERVER = PREFIX_FOR_CMD + "list";
+    static final String JOIN_SERVER = PREFIX_FOR_CMD + "join ";
+    static final String LEAVE_SERVER = PREFIX_FOR_CMD + "leave";
+    static final String RENAME = PREFIX_FOR_CMD + "rename ";
+    static final String QUIT = PREFIX_FOR_CMD + "quit";
+    
     public static void main(final String[] args) {
-
         // ---------------------------------------------------------------------
         // Connexion au serveur (Corba)
         // ---------------------------------------------------------------------
@@ -33,7 +42,27 @@ public class Client {
         // ---------------------------------------------------------------------
         // Fin connexion au serveur
         // ---------------------------------------------------------------------
-        
-        // Todo : suite
+        Scanner in = new Scanner(System.in);
+        while(true) {
+        	String s = in.nextLine();
+        	if (s.startsWith(CREATE_SERVER)) {
+                String name = s.substring(CREATE_SERVER.length());
+                //connImpl.createChatRoom(token, name);
+            } else if (s.startsWith(LIST_AVAILABLE_SERVER)) {
+                //connImpl.listChatRooms(token);
+            } else if (s.startsWith(JOIN_SERVER)) {
+                String name = s.substring(JOIN_SERVER.length());
+                //connImpl.joinChatRoom(token, name);
+            } else if (s.startsWith(LEAVE_SERVER)) {
+                //connImpl.leaveChatRoom(token);
+            } else if (s.startsWith(RENAME)) {
+                String name = s.substring(RENAME.length());
+                //connImpl.changeName(token, name);
+            } else if (s.startsWith(QUIT)) {
+                System.exit(0);
+            } else {
+                //connImpl.sendMessage(token, str);
+            }
+        }
     }
 }
