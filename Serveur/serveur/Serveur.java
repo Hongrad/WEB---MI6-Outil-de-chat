@@ -62,7 +62,7 @@ public class Serveur {
 
             // create servant and register it with the ORB
             ServiceServeurObj addobj = new ServiceServeurObj();
-            addobj.setORB(orb); 
+            addobj.setORB(orb);
 
             // get object reference from the servant
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(addobj);

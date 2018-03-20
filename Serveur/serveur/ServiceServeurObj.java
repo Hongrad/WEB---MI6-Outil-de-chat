@@ -1,6 +1,6 @@
 package serveur;
 
-import serveur.ServiceServeur.*;
+import serviceServeur.*;
 import org.omg.CosNaming.*;
 import org.omg.CosNaming.NamingContextPackage.*;
 import org.omg.CORBA.*;
