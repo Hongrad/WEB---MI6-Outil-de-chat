@@ -11,11 +11,21 @@ import java.util.Scanner;
  */
 public class ServeurBd {
     public static void main(final String[] args) {
+        ServiceBdImpl service = new ServiceBdImpl();
+        
+        // ---------------------------------------------------------------------
+        // Chargement de la liste des utilisateurs depuis le fichier
+        // ---------------------------------------------------------------------
+        if(!service.loadAllUsersDataFromFile()){
+            return;
+        }
+        // ---------------------------------------------------------------------
+        // Fin chargement de la liste des utilisateurs
+        // ---------------------------------------------------------------------
+        
         // ---------------------------------------------------------------------
         // Mise en ligne du service (RMI)
         // ---------------------------------------------------------------------
-        ServiceBdImpl service = new ServiceBdImpl();
-        
         ServiceBd stub = null;
         try {
             stub = (ServiceBd) UnicastRemoteObject.exportObject(service, 0);
@@ -36,16 +46,6 @@ public class ServeurBd {
         // Fin mise en ligne du service
         // ---------------------------------------------------------------------
 
-        // ---------------------------------------------------------------------
-        // Chargement de la liste des utilisateurs depuis le fichier
-        // ---------------------------------------------------------------------
-        if(!service.loadAllUsersDataFromFile()){
-            return;
-        }
-        // ---------------------------------------------------------------------
-        // Fin chargement de la liste des utilisateurs
-        // ---------------------------------------------------------------------
-        
         Scanner sc = new Scanner(System.in);
         String action = "";
         while (!action.equalsIgnoreCase("quitter")) {
