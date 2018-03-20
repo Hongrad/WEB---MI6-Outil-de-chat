@@ -6,6 +6,7 @@ import java.util.Scanner;
 import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 import serviceServeur.ServiceServeurHelper;
+import serviceServeur.UtilisateurHolder;
 
 /**
  * 
@@ -61,7 +62,8 @@ public class Client {
             } else if (s.startsWith(QUIT)) {
                 System.exit(0);
             } else {
-                //connImpl.sendMessage(token, str);
+                UtilisateurHolder uh = new UtilisateurHolder();
+                serviceServeur.sendMessage(s, uh);
             }
         }
     }
