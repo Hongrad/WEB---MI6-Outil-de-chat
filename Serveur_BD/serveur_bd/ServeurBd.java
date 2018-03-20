@@ -5,7 +5,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 
@@ -25,8 +24,9 @@ public class ServeurBd {
             return;
         }
         
+        Registry registry = null;
         try {
-            Registry registry = LocateRegistry.createRegistry(2001);
+            registry = LocateRegistry.createRegistry(2001);
             registry.bind("ServiceBd", stub);
         } catch (Exception ex) {
             System.out.println("Erreur : La création du registre pour le service 'ServiceBd' a échoué !");
@@ -39,11 +39,8 @@ public class ServeurBd {
         // ---------------------------------------------------------------------
         // Chargement de la liste des utilisateurs depuis le fichier
         // ---------------------------------------------------------------------
-        while (!service.loadAllUsersFromFile()){
-            System.out.println("Nouvelle essai dans 10 sec ...");
-            try {
-                TimeUnit.SECONDS.sleep(10);
-            } catch (InterruptedException ex) {}
+        if(!service.loadAllUsersDataFromFile()){
+            return;
         }
         // ---------------------------------------------------------------------
         // Fin chargement de la liste des utilisateurs
@@ -59,12 +56,7 @@ public class ServeurBd {
                 // ---------------------------------------------------------------------
                 // Sauvegarde des utilisateurs
                 // ---------------------------------------------------------------------
-                while (!service.saveAllUsersToFile()){
-                    System.out.println("Nouvelle essai dans 10 sec ...");
-                    try {
-                        TimeUnit.SECONDS.sleep(10);
-                    } catch (InterruptedException ex) {}
-                }
+                service.saveAllUsersDataToFile();
                 // ---------------------------------------------------------------------
                 // Fin sauvegarde des utilisateurs
                 // ---------------------------------------------------------------------

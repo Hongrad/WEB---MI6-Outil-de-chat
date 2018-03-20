@@ -15,48 +15,69 @@ import java.util.ArrayList;
  */
 public class ServiceBdImpl implements ServiceBd {
     
-    private ArrayList<Utilisateur> utilisateurs = null;
+    // Liste des données utilisateur
+    private ArrayList<UtilisateurData> utilisateursData = null;
 
     /**
+     * Charge toutes les données utilisateur
      * 
+     * @return 
      */
-    public boolean loadAllUsersFromFile(){
+    public boolean loadAllUsersDataFromFile(){
         ObjectInputStream ois = null;
 	try {
 	    ois = new ObjectInputStream(new FileInputStream(new File(this.getClass().getResource("DB").toURI())));
-	    this.utilisateurs = (ArrayList<Utilisateur>) ois.readObject();
+	    this.utilisateursData = (ArrayList<UtilisateurData>) ois.readObject();
 	    ois.close();
 	}catch (EOFException ex) {
-            return true;
+            // Si le fichier est vide : ne rien faire
         }catch (Exception ex) {
+            // Fichier introuvable ou corrompu
             System.out.println("Erreur de lecture du fichier de BD !");
             System.out.println(ex.toString());
             return false;
 	}
-	
-	if (this.utilisateurs == null){
-	    this.utilisateurs = new ArrayList<>();
+
+	if (this.utilisateursData == null){
+	    this.utilisateursData = new ArrayList<>();
 	}
-        
-        System.out.println("Liste des utilisateurs chargé !");
+
+        System.out.println("Liste des données utilisateurs chargé !");
         return true;
     }
     
     /**
+     * Sauvegarde toutes les données utilisateur
      * 
+     * @return 
      */
-    public boolean saveAllUsersToFile(){
+    public boolean saveAllUsersDataToFile(){        
         ObjectOutputStream oos;
         try{
             oos = new ObjectOutputStream(new FileOutputStream(new File(this.getClass().getResource("DB").toURI())));
-            oos.writeObject(this.utilisateurs);
+            oos.writeObject(this.utilisateursData);
             oos.close();
         }catch (Exception ex){
             System.out.println(ex.toString());
             return false;
         }
-        
-        System.out.println("Liste des utilisateurs sauvegardé !");
+
+        System.out.println("Liste des données utilisateurs sauvegardé !");
         return true;
+    }
+
+    @Override
+    public boolean authenticate(Utilisateur utilisateur) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean createNewUser(Utilisateur utilisateur) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean updateUser(Utilisateur utilisateur) throws RemoteException {
+        return false;
     }
 }
