@@ -73,8 +73,6 @@ public class Serveur {
 
             NameComponent path[] = ncRef.to_name("ServiceServeur");
             ncRef.rebind(path, href);
-            
-            orb.run();
         }catch (Exception ex) {
             System.out.println("Erreur : " + ex.toString());
             ex.printStackTrace(System.out);
@@ -84,9 +82,7 @@ public class Serveur {
         // ---------------------------------------------------------------------
         // Fin mise en ligne du serveur (Corba)
         // ---------------------------------------------------------------------
-
-        // Boucle infinit pour attendre
-        for (;;){
-        }
+        
+        orb.run();
     }
 }
