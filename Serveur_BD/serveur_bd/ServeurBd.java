@@ -42,6 +42,7 @@ public class ServeurBd {
             System.out.println("Erreur : La création du registre pour le service 'ServiceBd' a échoué !");
             return;
         }
+        System.out.println("Mise en ligne du serveur (ServiceBd) réussi !");
         // ---------------------------------------------------------------------
         // Fin mise en ligne du service
         // ---------------------------------------------------------------------
