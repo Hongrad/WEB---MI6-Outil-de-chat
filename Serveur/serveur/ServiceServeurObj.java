@@ -1,5 +1,6 @@
 package serveur;
 
+import client.Utilisateur;
 import serviceServeur.*;
 import org.omg.CosNaming.*;
 import org.omg.CosNaming.NamingContextPackage.*;
@@ -13,20 +14,14 @@ import serviceServeur.ServiceServeurPOA;
  * 
  */
 public class ServiceServeurObj extends ServiceServeurPOA {
-    private ORB orb;
- 
-    public void setORB(ORB orb_val) {
-        orb = orb_val; 
-    }
 
-    // implement add() method
-    public int add(int a, int b) {
-        int r=a+b;
-        return r;
+    @Override
+    public void sendMessage(String message, UtilisateurHolder utilisateur) {
+        System.out.println("Message : " + message);
     }
-
-    // implement shutdown() method
-    public void shutdown() {
-        orb.shutdown(false);
+    
+    @Override
+    public boolean authenticate(String nom, String motDePasse, UtilisateurHolder utilisateur) {
+        return false;
     }
 }

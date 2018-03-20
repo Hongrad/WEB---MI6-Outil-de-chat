@@ -1,8 +1,9 @@
-module serviceServeur
-{
-  interface ServiceServeur
-  {
-    long add(in long a,in long b);
-    oneway void shutdown();
+module serviceServeur {
+    interface Utilisateur {
+    };
+
+    interface ServiceServeur {
+        void sendMessage(in string message, inout Utilisateur utilisateur);
+        boolean authenticate(in string nom, in string motDePasse, inout Utilisateur utilisateur);
     };
 };
