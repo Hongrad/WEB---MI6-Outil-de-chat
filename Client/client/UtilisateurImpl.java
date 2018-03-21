@@ -33,7 +33,6 @@ public class UtilisateurImpl extends UtilisateurPOA implements Utilisateur {
 	
         @Override
 	public void afficher(String message) {
-            System.out.println(message);
-            System.out.println(this.getName());
+            System.out.println("\n" + message);
         }
 }

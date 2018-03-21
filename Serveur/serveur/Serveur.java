@@ -61,7 +61,7 @@ public class Serveur {
             rootpoa.the_POAManager().activate();
 
             // create servant and register it with the ORB
-            ServiceServeurObj ServeurService = new ServiceServeurObj();
+            ServiceServeurImpl ServeurService = new ServiceServeurImpl();
 
             // get object reference from the servant
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(ServeurService);

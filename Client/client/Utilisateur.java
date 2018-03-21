@@ -6,13 +6,14 @@
 package client;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  *
  */
 public interface Utilisateur extends Remote {
-	public String getName();
-	public void setName(String name);
-	public String getPassword();
-	public void setPassword(String password);
+    public String getName() throws RemoteException;
+    public void setName(String name) throws RemoteException;
+    public String getPassword() throws RemoteException;
+    public void setPassword(String password) throws RemoteException;
 }

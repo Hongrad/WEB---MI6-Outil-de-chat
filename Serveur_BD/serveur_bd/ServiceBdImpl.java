@@ -18,6 +18,10 @@ public class ServiceBdImpl implements ServiceBd {
     // Liste des données utilisateur
     private ArrayList<UtilisateurData> utilisateursData = null;
 
+    public ServiceBdImpl() {
+        utilisateursData = new ArrayList<>();
+    }
+
     /**
      * Charge toutes les données utilisateur
      * 

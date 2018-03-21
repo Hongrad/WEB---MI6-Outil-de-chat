@@ -1,5 +1,6 @@
 package client;
 
+import corbaInterface.MessageType;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -9,23 +10,23 @@ import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import corbaInterface.ServiceServeurHelper;
 import corbaInterface.UtilisateurHelper;
-import corbaInterface.UtilisateurHolder;
 
 /**
  * 
  */
 public class Client {
     static final String PREFIX_FOR_CMD = "/";
-    static final String CREATE_SERVER = PREFIX_FOR_CMD + "create ";
-    static final String LIST_AVAILABLE_SERVER = PREFIX_FOR_CMD + "list";
-    static final String JOIN_SERVER = PREFIX_FOR_CMD + "join ";
-    static final String LEAVE_SERVER = PREFIX_FOR_CMD + "leave";
-    static final String RENAME = PREFIX_FOR_CMD + "rename ";
-    static final String QUIT = PREFIX_FOR_CMD + "quit";
+    static final String HELP = "help";
+    static final String CREATE_SERVER = "create";
+    static final String LIST_AVAILABLE_SERVER = "list";
+    static final String JOIN_SERVER = "join ";
+    static final String LEAVE_SERVER = "leave";
+    static final String RENAME = "rename ";
+    static final String QUIT = "quit";
         
     public static void main(final String[] args) {
         UtilisateurImpl u = new UtilisateurImpl("nom1", "pass2");
-        corbaInterface.Utilisateur utilisateurObj = null;
+        corbaInterface.Utilisateur utilisateur = null;
         
         // ---------------------------------------------------------------------
         // Connexion au serveur (Corba)
@@ -48,7 +49,7 @@ public class Client {
 
             // get object reference from the servant
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(u);
-            utilisateurObj = UtilisateurHelper.narrow(ref);
+            utilisateur = UtilisateurHelper.narrow(ref);
         }catch (Exception ex) {
            System.out.println("Erreur : " + ex.toString());
            ex.printStackTrace();
@@ -58,27 +59,55 @@ public class Client {
         // ---------------------------------------------------------------------
         // Fin connexion au serveur
         // ---------------------------------------------------------------------
-        Scanner in = new Scanner(System.in);
-        while(true) {
-        	String s = in.nextLine();
-        	if (s.startsWith(CREATE_SERVER)) {
-                String name = s.substring(CREATE_SERVER.length());
-                //connImpl.createChatRoom(token, name);
-            } else if (s.startsWith(LIST_AVAILABLE_SERVER)) {
-                //connImpl.listChatRooms(token);
-            } else if (s.startsWith(JOIN_SERVER)) {
-                String name = s.substring(JOIN_SERVER.length());
-                //connImpl.joinChatRoom(token, name);
-            } else if (s.startsWith(LEAVE_SERVER)) {
-                //connImpl.leaveChatRoom(token);
-            } else if (s.startsWith(RENAME)) {
-                String name = s.substring(RENAME.length());
-                //connImpl.changeName(token, name);
-            } else if (s.startsWith(QUIT)) {
-                System.exit(0);
-            } else {                
-                serviceServeur.sendMessage(s, utilisateurObj);
+                
+        try {
+            Scanner in = new Scanner(System.in);
+
+            System.out.print("Nom : ");
+            String s = in.nextLine();
+            System.out.println("Bonjour " + s + " !");
+            utilisateur.setName(s);
+            
+            // Notification du serveur de la connexion
+            serviceServeur.sendMessage(MessageType.authenticate, "", utilisateur);
+            // Todo : voir mot de passe
+
+            System.out.println("Tapé '/help' pour la liste des commandes !");
+            while(true) {
+                System.out.print("\nMessage : ");
+                s = in.nextLine();
+
+                if (s.startsWith(PREFIX_FOR_CMD)) {
+                    // Si c'est une commande
+
+                    s = s.replaceFirst(PREFIX_FOR_CMD, "");
+
+                    if (s.startsWith(HELP)) {
+                        System.out.println("Liste des commandes :");
+                        System.out.println(HELP);
+                        System.out.println(QUIT);
+                    } else if (s.startsWith(CREATE_SERVER)) {
+                        // Todo
+                    } else if (s.startsWith(LIST_AVAILABLE_SERVER)) {
+                        // Todo
+                    } else if (s.startsWith(JOIN_SERVER)) {
+                        // Todo
+                    } else if (s.startsWith(LEAVE_SERVER)) {
+                        // Todo
+                    } else if (s.startsWith(RENAME)) {
+                        // Todo
+                    } else if (s.startsWith(QUIT)) {
+                        System.exit(0);
+                    } else {
+                        System.out.println("Erreur : La commande '" + s + "' n'existe pas !");
+                    }
+                }else {                
+                    serviceServeur.sendMessage(MessageType.message, s, utilisateur);
+                }
             }
+        }catch (Exception e) {
+            System.out.println("Une erreur c'est produite !");
+            System.out.println(e.toString());
         }
     }
 }
