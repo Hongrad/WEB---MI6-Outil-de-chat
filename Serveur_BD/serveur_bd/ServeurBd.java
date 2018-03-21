@@ -17,7 +17,7 @@ public class ServeurBd {
         // Chargement de la liste des utilisateurs depuis le fichier
         // ---------------------------------------------------------------------
         if(!service.loadAllUsersDataFromFile()){
-            return;
+            System.exit(0);
         }
         // ---------------------------------------------------------------------
         // Fin chargement de la liste des utilisateurs
@@ -31,7 +31,7 @@ public class ServeurBd {
             stub = (ServiceBd) UnicastRemoteObject.exportObject(service, 0);
         } catch (RemoteException ex) {
             System.out.println("Erreur : La création du stub pour le service BD !");
-            return;
+            System.exit(0);
         }
         
         Registry registry = null;
@@ -40,7 +40,7 @@ public class ServeurBd {
             registry.bind("ServiceBd", stub);
         } catch (Exception ex) {
             System.out.println("Erreur : La création du registre pour le service 'ServiceBd' a échoué !");
-            return;
+            System.exit(0);
         }
         System.out.println("Mise en ligne du serveur (ServiceBd) réussi !");
         // ---------------------------------------------------------------------

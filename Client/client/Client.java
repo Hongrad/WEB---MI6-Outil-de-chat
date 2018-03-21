@@ -51,7 +51,7 @@ public class Client {
         }catch (Exception ex) {
            System.out.println("Erreur : " + ex.toString());
            ex.printStackTrace();
-           return;
+           System.exit(0);
         }
         System.out.println("Connecté au serveur !");
         // ---------------------------------------------------------------------
@@ -82,7 +82,7 @@ public class Client {
                             connected = true;
                             System.out.println("Connexion réussi !");
                         }else {
-                            System.out.print("Identifiant ou mot de passe incorrect !");
+                            System.out.println("Identifiant ou mot de passe incorrect !");
                         }
                     } else {
                         // Création de compte
@@ -90,7 +90,7 @@ public class Client {
                             connected = true;
                             System.out.println("Création du compte réussi !");
                         }else {
-                            System.out.print("Erreur lors de la création du compte !");
+                            System.out.println("Erreur lors de la création du compte !");
                         }
                     }
                 }

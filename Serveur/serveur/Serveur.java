@@ -26,7 +26,7 @@ public class Serveur {
             registry = LocateRegistry.getRegistry(2001);
         } catch (RemoteException e){
             System.out.println("Erreur : Le registre du service 'ServiceBd' est introuvable !");
-            return;
+            System.exit(0);
         }
         
         ServiceBd serviceBd = null;
@@ -75,7 +75,7 @@ public class Serveur {
         }catch (Exception ex) {
             System.out.println("Erreur : " + ex.toString());
             ex.printStackTrace(System.out);
-            return;
+            System.exit(0);
         }
         System.out.println("Mise en ligne du serveur (ServiceServeur) réussi !");
         // ---------------------------------------------------------------------

@@ -1,8 +1,11 @@
 package serveur;
 
 import corbaInterface.*;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import serveur_bd.ServiceBd;
 
 /**
@@ -52,13 +55,17 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public boolean createAccount(Utilisateur utilisateur) {
-        if (this.serviceBd.createNewUser(utilisateur)) {
-            synchronized (this.utilisateurs){
-                this.utilisateurs.add(utilisateur);
+        try {
+            if (this.serviceBd.createNewUser(utilisateur)) {
+                synchronized (this.utilisateurs){
+                    this.utilisateurs.add(utilisateur);
+                }
+                this.sendMessageToAll(utilisateur.getName() + " vien de se connecter !", utilisateur);
+                return true;
+            } else {
+                return false;
             }
-            this.sendMessageToAll(utilisateur.getName() + " vien de se connecter !", utilisateur);
-            return true;
-        } else {
+        } catch (RemoteException ex) {
             return false;
         }
     }
@@ -71,13 +78,17 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public boolean authenticate(Utilisateur utilisateur) {
-        if (this.serviceBd.authenticate(utilisateur)) {
-            synchronized (this.utilisateurs){
-                this.utilisateurs.add(utilisateur);
+        try {
+            if (this.serviceBd.authenticate(utilisateur)) {
+                synchronized (this.utilisateurs){
+                    this.utilisateurs.add(utilisateur);
+                }
+                this.sendMessageToAll(utilisateur.getName() + " vien de se connecter !", utilisateur);
+                return true;
+            } else {
+                return false;
             }
-            this.sendMessageToAll(utilisateur.getName() + " vien de se connecter !", utilisateur);
-            return true;
-        } else {
+        } catch (RemoteException ex) {
             return false;
         }
     }
