@@ -1,17 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package client;
 
-import serviceServeur.UtilisateurPOA;
+import corbaInterface.UtilisateurPOA;
 
 /**
  *
- * @author ratchetsniper2
  */
-public class UtilisateurImpl extends UtilisateurPOA {
+public class UtilisateurImpl extends UtilisateurPOA implements Utilisateur {
 	private String name;
 	private String password;
 

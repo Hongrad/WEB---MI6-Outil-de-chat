@@ -11,7 +11,7 @@ import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 import org.omg.PortableServer.*;
 import org.omg.PortableServer.POA;
-import serviceServeur.ServiceServeurHelper;
+import corbaInterface.ServiceServeurHelper;
 
 /**
  * 
@@ -65,7 +65,7 @@ public class Serveur {
 
             // get object reference from the servant
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(ServeurService);
-            serviceServeur.ServiceServeur href = ServiceServeurHelper.narrow(ref);
+            corbaInterface.ServiceServeur href = ServiceServeurHelper.narrow(ref);
 
             org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
             NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);

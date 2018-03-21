@@ -9,7 +9,6 @@ import java.rmi.Remote;
 
 /**
  *
- * @author ratchetElFamosoSniper2
  */
 public interface Utilisateur extends Remote {
 	public String getName();

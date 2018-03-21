@@ -1,4 +1,4 @@
-module serviceServeur {
+module corbaInterface {
     interface Utilisateur {
         string getName();
 	void setName(in string name);

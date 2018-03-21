@@ -7,9 +7,9 @@ import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
-import serviceServeur.ServiceServeurHelper;
-import serviceServeur.UtilisateurHelper;
-import serviceServeur.UtilisateurHolder;
+import corbaInterface.ServiceServeurHelper;
+import corbaInterface.UtilisateurHelper;
+import corbaInterface.UtilisateurHolder;
 
 /**
  * 
@@ -24,13 +24,13 @@ public class Client {
     static final String QUIT = PREFIX_FOR_CMD + "quit";
         
     public static void main(final String[] args) {
-        UtilisateurImpl utilisateur = new UtilisateurImpl("nom1", "pass2");
-        serviceServeur.Utilisateur utilisateurObj = null;
+        UtilisateurImpl u = new UtilisateurImpl("nom1", "pass2");
+        corbaInterface.Utilisateur utilisateurObj = null;
         
         // ---------------------------------------------------------------------
         // Connexion au serveur (Corba)
         // ---------------------------------------------------------------------
-        serviceServeur.ServiceServeur serviceServeur = null;
+        corbaInterface.ServiceServeur serviceServeur = null;
         try {
             Properties props = new Properties();
             props.put("org.omg.CORBA.ORBInitialPort", "2002");
@@ -39,15 +39,15 @@ public class Client {
             ORB orb = ORB.init((String[]) null, props);
             org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
             NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
-            serviceServeur = (serviceServeur.ServiceServeur) ServiceServeurHelper.narrow(ncRef.resolve_str("ServiceServeur"));
+            serviceServeur = (corbaInterface.ServiceServeur) ServiceServeurHelper.narrow(ncRef.resolve_str("ServiceServeur"));
             
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             rootpoa.the_POAManager().activate();
             
-            rootpoa.activate_object(utilisateur);
+            rootpoa.activate_object(u);
 
             // get object reference from the servant
-            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(utilisateur);
+            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(u);
             utilisateurObj = UtilisateurHelper.narrow(ref);
         }catch (Exception ex) {
            System.out.println("Erreur : " + ex.toString());
