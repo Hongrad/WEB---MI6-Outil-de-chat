@@ -26,13 +26,4 @@ public interface ServiceBd extends Remote {
      * @throws RemoteException 
      */
     public boolean createNewUser(Utilisateur utilisateur) throws RemoteException;
-    
-    /**
-     * Met à jour les données de l'utilisateur en BD
-     * 
-     * @param utilisateur
-     * @return vrai si réussi
-     * @throws RemoteException 
-     */
-    public boolean updateUser(Utilisateur utilisateur) throws RemoteException;
 }

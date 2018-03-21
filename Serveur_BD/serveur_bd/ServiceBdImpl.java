@@ -79,9 +79,4 @@ public class ServiceBdImpl implements ServiceBd {
     public boolean createNewUser(Utilisateur utilisateur) throws RemoteException {
         return false;
     }
-
-    @Override
-    public boolean updateUser(Utilisateur utilisateur) throws RemoteException {
-        return false;
-    }
 }

@@ -1,0 +1,19 @@
+module corbaInterface {
+    interface Utilisateur {
+        string getName();
+	void setName(in string name);
+	string getPassword();
+	void setPassword(in string password);
+        void afficher(in string message);
+    };
+
+    interface ServiceServeur {
+        boolean createAccount(in Utilisateur utilisateur);
+        boolean authenticate(in Utilisateur utilisateur);
+        boolean createRoom(in string roomName, in Utilisateur utilisateur);
+        boolean joinRoom(in string roomName, in Utilisateur utilisateur);
+        void sendMessage(in string message, in Utilisateur utilisateur);
+        string getHistory(in Utilisateur utilisateur);
+        void quit(in Utilisateur utilisateur);
+    };
+};

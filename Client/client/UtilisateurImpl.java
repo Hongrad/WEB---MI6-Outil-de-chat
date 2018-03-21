@@ -5,7 +5,7 @@ import corbaInterface.UtilisateurPOA;
 /**
  *
  */
-public class UtilisateurImpl extends UtilisateurPOA implements Utilisateur {
+public class UtilisateurImpl extends UtilisateurPOA {
 	private String name;
 	private String password;
 

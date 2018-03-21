@@ -17,11 +17,9 @@ import corbaInterface.UtilisateurHelper;
 public class Client {
     static final String PREFIX_FOR_CMD = "/";
     static final String HELP = "help";
-    static final String CREATE_SERVER = "create";
-    static final String LIST_AVAILABLE_SERVER = "list";
-    static final String JOIN_SERVER = "join ";
-    static final String LEAVE_SERVER = "leave";
-    static final String RENAME = "rename ";
+    static final String CREATE_ROOM = "create";
+    static final String JOIN_ROOM = "join";
+    static final String GET_HISTORY = "hitory";
     static final String QUIT = "quit";
         
     public static void main(final String[] args) {
@@ -62,15 +60,41 @@ public class Client {
                 
         try {
             Scanner in = new Scanner(System.in);
-
-            System.out.print("Nom : ");
-            String s = in.nextLine();
-            System.out.println("Bonjour " + s + " !");
-            utilisateur.setName(s);
+            String s = "";
             
-            // Notification du serveur de la connexion
-            serviceServeur.sendMessage(MessageType.authenticate, "", utilisateur);
-            // Todo : voir mot de passe
+            Boolean connected = false;
+            while (!connected) {
+                System.out.print("Connexion (0) / Créer un compte (1) : ");
+                String type = in.nextLine();
+                if (type.equals("0") || type.equals("1")) {
+                    
+                    System.out.print("Nom : ");
+                    s = in.nextLine();
+                    utilisateur.setName(s);
+                    
+                    System.out.print("Mot de Passe : ");
+                    s = in.nextLine();
+                    utilisateur.setPassword(s);
+                    
+                    if (type.equals("0")) {
+                        // Connexion
+                        if (serviceServeur.authenticate(utilisateur)) {
+                            connected = true;
+                            System.out.println("Connexion réussi !");
+                        }else {
+                            System.out.print("Identifiant ou mot de passe incorrect !");
+                        }
+                    } else {
+                        // Création de compte
+                        if (serviceServeur.createAccount(utilisateur)) {
+                            connected = true;
+                            System.out.println("Création du compte réussi !");
+                        }else {
+                            System.out.print("Erreur lors de la création du compte !");
+                        }
+                    }
+                }
+            }
 
             System.out.println("Tapé '/help' pour la liste des commandes !");
             while(true) {
@@ -85,24 +109,41 @@ public class Client {
                     if (s.startsWith(HELP)) {
                         System.out.println("Liste des commandes :");
                         System.out.println(HELP);
+                        System.out.println(CREATE_ROOM + "'roomName' (not done)");
+                        System.out.println(JOIN_ROOM + "'roomName' (not done)");
+                        System.out.println(GET_HISTORY + " (not done)");
                         System.out.println(QUIT);
-                    } else if (s.startsWith(CREATE_SERVER)) {
-                        // Todo
-                    } else if (s.startsWith(LIST_AVAILABLE_SERVER)) {
-                        // Todo
-                    } else if (s.startsWith(JOIN_SERVER)) {
-                        // Todo
-                    } else if (s.startsWith(LEAVE_SERVER)) {
-                        // Todo
-                    } else if (s.startsWith(RENAME)) {
-                        // Todo
+                        
+                    } else if (s.startsWith(CREATE_ROOM)) {
+                        String roomName = s.replace(CREATE_ROOM, "").trim();
+                        
+                        if (serviceServeur.createRoom(roomName, utilisateur)){
+                            System.out.println("La salle '" + roomName + "' a été créé !");
+                        }else{
+                            System.out.println(" Erreur : La sale n'a pas pu être créé ...");
+                        }
+                        
+                    } else if (s.startsWith(JOIN_ROOM)) {
+                        String roomName = s.replace(JOIN_ROOM, "").trim();
+                        
+                        if (serviceServeur.joinRoom(roomName, utilisateur)){
+                            System.out.println("Vous avez rejoin la salle '" + roomName + "' !");
+                        }else{
+                            System.out.println(" Erreur : La sale '" + roomName + "' n'éxiste pas ...");
+                        }
+                        
+                    } else if (s.startsWith(GET_HISTORY)) {
+                        System.out.println(serviceServeur.getHistory(utilisateur));
+                        
                     } else if (s.startsWith(QUIT)) {
+                        serviceServeur.quit(utilisateur);
                         System.exit(0);
+                        
                     } else {
                         System.out.println("Erreur : La commande '" + s + "' n'existe pas !");
                     }
-                }else {                
-                    serviceServeur.sendMessage(MessageType.message, s, utilisateur);
+                }else if (s.trim().length() > 0) {
+                    serviceServeur.sendMessage(s, utilisateur);
                 }
             }
         }catch (Exception e) {
