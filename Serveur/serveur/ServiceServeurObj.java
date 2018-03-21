@@ -1,13 +1,6 @@
 package serveur;
 
-import client.Utilisateur;
 import serviceServeur.*;
-import org.omg.CosNaming.*;
-import org.omg.CosNaming.NamingContextPackage.*;
-import org.omg.CORBA.*;
-import org.omg.PortableServer.*;
-import org.omg.PortableServer.POA;
-import java.util.Properties;
 import serviceServeur.ServiceServeurPOA;
 
 /**
@@ -16,8 +9,12 @@ import serviceServeur.ServiceServeurPOA;
 public class ServiceServeurObj extends ServiceServeurPOA {
 
     @Override
-    public void sendMessage(String message, UtilisateurHolder utilisateur) {
+    public void sendMessage(String message, Utilisateur utilisateur) {
         System.out.println("Message : " + message);
+        System.out.println("Nom : " + utilisateur.getName());
+        utilisateur.setName("gg");
+        System.out.println("Nom : " + utilisateur.getName());
+        utilisateur.afficher("test affichage");
     }
     
     @Override

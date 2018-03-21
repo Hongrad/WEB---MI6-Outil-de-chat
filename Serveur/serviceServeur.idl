@@ -1,0 +1,14 @@
+module serviceServeur {
+    interface Utilisateur {
+        string getName();
+	void setName(in string name);
+	string getPassword();
+	void setPassword(in string password);
+        void afficher(in string message);
+    };
+
+    interface ServiceServeur {
+        void sendMessage(in string message, in Utilisateur utilisateur);
+        boolean authenticate(in string nom, in string motDePasse, in Utilisateur utilisateur);
+    };
+};
