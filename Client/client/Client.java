@@ -19,7 +19,7 @@ public class Client {
     static final String LIST_AVAILABLE_ROOM = "list";
     static final String CREATE_ROOM = "create";
     static final String JOIN_ROOM = "join";
-    static final String GET_HISTORY = "hitory";
+    static final String GET_HISTORY = "history";
     static final String QUIT = "quit";
         
     public static void main(final String[] args) {
