@@ -1,6 +1,6 @@
 package serveur_bd;
 
-import corbaInterface.Utilisateur;
+import client.Utilisateur;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

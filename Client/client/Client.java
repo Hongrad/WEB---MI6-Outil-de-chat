@@ -1,6 +1,5 @@
 package client;
 
-import corbaInterface.MessageType;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -81,16 +80,12 @@ public class Client {
                         if (serviceServeur.authenticate(utilisateur)) {
                             connected = true;
                             System.out.println("Connexion réussi !");
-                        }else {
-                            System.out.println("Identifiant ou mot de passe incorrect !");
                         }
                     } else {
                         // Création de compte
                         if (serviceServeur.createAccount(utilisateur)) {
                             connected = true;
                             System.out.println("Création du compte réussi !");
-                        }else {
-                            System.out.println("Erreur lors de la création du compte !");
                         }
                     }
                 }

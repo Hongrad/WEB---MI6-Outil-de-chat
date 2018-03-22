@@ -2,10 +2,9 @@ package serveur;
 
 import corbaInterface.*;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import serveur_bd.ServiceBd;
 
 /**
@@ -24,13 +23,57 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
     }
     
     /**
+     * Récupère un utilisateur connecté au stub RMI
+     * Permet de faire le lien entre l'interface corba et rmi
+     * 
+     * @param utilisateurCorba
+     * @return utilisateurRmi
+     */
+    private client.Utilisateur getRmiUtilisateur(Utilisateur utilisateurCorba) {
+        client.Utilisateur utilisateurRmi = new client.Utilisateur() {
+            @Override
+            public String getName() throws RemoteException {
+                return utilisateurCorba.getName();
+            }
+
+            @Override
+            public void setName(String name) throws RemoteException {
+                utilisateurCorba.setName(name);
+            }
+
+            @Override
+            public String getPassword() throws RemoteException {
+                return utilisateurCorba.getPassword();
+            }
+
+            @Override
+            public void setPassword(String password) throws RemoteException {
+                utilisateurCorba.setPassword(password);
+            }
+
+            @Override
+            public void afficher(String message) throws RemoteException {
+                utilisateurCorba.afficher(message);
+            }
+        };
+        
+        try {
+            client.Utilisateur stub = (client.Utilisateur) UnicastRemoteObject.exportObject(utilisateurRmi, 0);
+        } catch (RemoteException ex) {
+            System.out.println("Erreur : La création du stub RMI a échoué pour l'utilisateur " + utilisateurCorba.getName());
+        }
+        
+        return utilisateurRmi;
+    }
+    
+    /**
      * Envoie un message à tous les utilisateurs sauf celui passé en paramètre
      * 
      * @param message
      * @param utilisateur 
      */
     private void sendMessageToAll(String message, Utilisateur utilisateur) {        
-        synchronized (this.utilisateurs){
+        synchronized (this.utilisateurs) {
             Iterator<Utilisateur> i = this.utilisateurs.iterator();
             while (i.hasNext()) {
                 Utilisateur u = i.next();
@@ -56,7 +99,7 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
     @Override
     public boolean createAccount(Utilisateur utilisateur) {
         try {
-            if (this.serviceBd.createNewUser(utilisateur)) {
+            if (this.serviceBd.createNewUser(this.getRmiUtilisateur(utilisateur))) {
                 synchronized (this.utilisateurs){
                     this.utilisateurs.add(utilisateur);
                 }
@@ -66,6 +109,7 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
                 return false;
             }
         } catch (RemoteException ex) {
+            System.out.println(ex.toString());
             return false;
         }
     }
@@ -79,8 +123,8 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
     @Override
     public boolean authenticate(Utilisateur utilisateur) {
         try {
-            if (this.serviceBd.authenticate(utilisateur)) {
-                synchronized (this.utilisateurs){
+            if (this.serviceBd.authenticate(this.getRmiUtilisateur(utilisateur))) {
+                synchronized (this.utilisateurs) {
                     this.utilisateurs.add(utilisateur);
                 }
                 this.sendMessageToAll(utilisateur.getName() + " vien de se connecter !", utilisateur);
@@ -89,6 +133,7 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
                 return false;
             }
         } catch (RemoteException ex) {
+            System.out.println(ex.toString());
             return false;
         }
     }
