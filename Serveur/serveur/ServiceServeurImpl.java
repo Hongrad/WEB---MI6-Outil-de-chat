@@ -116,8 +116,13 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
                 synchronized (this.chatRooms) {
                     this.chatRooms.get(chatRoomName).remove(utilisateur);
                     
-                    this.sendMessageToRoom("Un utilisateur s'est déconnecté !", utilisateur);
-                    
+                    try {
+                        String name = utilisateur.getName();
+                        this.sendMessageToRoom(name + " s'est déconnecté !", utilisateur);
+                    } catch (Exception ex) {
+                        this.sendMessageToRoom("Un utilisateur n'est plus joignable !", utilisateur);
+                    }
+                                        
                     // Si il n'y a plus d'utilisateur dans la salle, on la supprime 
                     if (this.chatRooms.get(chatRoomName).size() == 0) {
                         this.chatRooms.remove(chatRoomName);
@@ -224,11 +229,11 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public boolean createRoom(String roomName, Utilisateur utilisateur) {
-        this.disconnectUtilisateurFromChatRoom(utilisateur);
-        
         synchronized (this.utilisateurs) {
             synchronized (this.chatRooms) {
                 if (!this.chatRooms.containsKey(roomName)) {
+                    this.disconnectUtilisateurFromChatRoom(utilisateur);
+                    
                     this.utilisateurs.put(utilisateur, roomName);
                     ArrayList<Utilisateur> roomUsers = new ArrayList<>();
                     roomUsers.add(utilisateur);
@@ -251,11 +256,11 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public boolean joinRoom(String roomName, Utilisateur utilisateur) {
-        this.disconnectUtilisateurFromChatRoom(utilisateur);
-        
         synchronized (this.utilisateurs) {
             synchronized (this.chatRooms) {
                 if (this.chatRooms.containsKey(roomName)) {
+                    this.disconnectUtilisateurFromChatRoom(utilisateur);
+                    
                     this.utilisateurs.put(utilisateur, roomName);
                     this.chatRooms.get(roomName).add(utilisateur);
                     this.sendMessageToRoom(utilisateur.getName() + " vien de se connecter !", utilisateur);

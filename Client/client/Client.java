@@ -105,9 +105,9 @@ public class Client {
                     if (s.startsWith(HELP)) {
                         System.out.println("Liste des commandes :");
                         System.out.println(HELP);
-                        System.out.println(LIST_AVAILABLE_ROOM);
-                        System.out.println(CREATE_ROOM + "'roomName'");
-                        System.out.println(JOIN_ROOM + "'roomName'");
+                        System.out.println(LIST_AVAILABLE_ROOM + "(Avoir la liste des salles de chat)");
+                        System.out.println(CREATE_ROOM + " 'roomName' (Créer une salle de chat)");
+                        System.out.println(JOIN_ROOM + " 'roomName' (Rejoindre une salle de chat)");
                         System.out.println(GET_HISTORY + " (not done)");
                         System.out.println(QUIT);
                         

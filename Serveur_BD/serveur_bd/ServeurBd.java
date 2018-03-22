@@ -16,9 +16,9 @@ public class ServeurBd {
         // ---------------------------------------------------------------------
         // Chargement de la liste des utilisateurs depuis le fichier
         // ---------------------------------------------------------------------
-        if(!service.loadAllUsersDataFromFile()){
+        /*if(!service.loadAllUsersDataFromFile()){
             System.exit(0);
-        }
+        }*/
         // ---------------------------------------------------------------------
         // Fin chargement de la liste des utilisateurs
         // ---------------------------------------------------------------------
@@ -50,10 +50,10 @@ public class ServeurBd {
         Scanner sc = new Scanner(System.in);
         String action = "";
         while (!action.equalsIgnoreCase("quitter")) {
-            System.out.print("Action (sauvegarder) : ");
+            System.out.print("Action (quitter) : ");
             action = sc.nextLine();
             
-            if (action.equalsIgnoreCase("sauvegarder")){
+            /*if (action.equalsIgnoreCase("sauvegarder")){
                 // ---------------------------------------------------------------------
                 // Sauvegarde des utilisateurs
                 // ---------------------------------------------------------------------
@@ -61,7 +61,9 @@ public class ServeurBd {
                 // ---------------------------------------------------------------------
                 // Fin sauvegarde des utilisateurs
                 // ---------------------------------------------------------------------
-            }
+            }*/
         }
+        
+        System.exit(0);
     }
 }
