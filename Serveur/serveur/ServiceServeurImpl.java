@@ -4,26 +4,30 @@ import corbaInterface.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import serveur_bd.ServiceBd;
 
 /**
  * 
  */
 public class ServiceServeurImpl extends ServiceServeurPOA {
-    // Liste des utilisateurs connectés
-    private ArrayList<Utilisateur> utilisateurs;
+    // Liste des salles de chat
+    private HashMap<String, ArrayList<Utilisateur>> chatRooms;
+    
+    // Liste des utilisateur et de la salle dans laquelle il est
+    private HashMap<Utilisateur, String> utilisateurs;
     
     // Le service de la BD
     private ServiceBd serviceBd;
 
     public ServiceServeurImpl(ServiceBd serviceBd) {
-        this.utilisateurs = new ArrayList<>();
+        this.chatRooms = new HashMap<>();
+        this.utilisateurs = new HashMap<>();
         this.serviceBd = serviceBd;
     }
     
     /**
-     * Récupère un utilisateur connecté au stub RMI
+     * Retourne un utilisateur connecté au stub RMI
      * Permet de faire le lien entre l'interface corba et rmi
      * 
      * @param utilisateurCorba
@@ -67,28 +71,78 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
     }
     
     /**
-     * Envoie un message à tous les utilisateurs sauf celui passé en paramètre
+     * Envoie un message à tous les utilisateurs de la salle de l'utilisateur passé en paramètre
      * 
      * @param message
      * @param utilisateur 
      */
-    private void sendMessageToAll(String message, Utilisateur utilisateur) {        
+    private void sendMessageToRoom(String message, Utilisateur utilisateur) {
         synchronized (this.utilisateurs) {
-            Iterator<Utilisateur> i = this.utilisateurs.iterator();
-            while (i.hasNext()) {
-                Utilisateur u = i.next();
-                        
-                if (!u.equals(utilisateur)) {
-                    try {
-                        u.afficher(message);
-                    } catch (Exception e) {
-                        // Utilisateur non joingnable : le supprimer
-                        i.remove();
+            String chatRoomName = this.utilisateurs.get(utilisateur);
+        
+            if (chatRoomName != null) {
+                synchronized (this.chatRooms) {
+                    ArrayList<Utilisateur> lostUtilisateurs = new ArrayList<>();
+                    
+                    for (Utilisateur u : this.chatRooms.get(chatRoomName)) {
+                        if (!u.equals(utilisateur)) {
+                            try {
+                                u.afficher(message);
+                            } catch (Exception e) {
+                                // Utilisateur non joingnable : le supprimer
+                                lostUtilisateurs.add(u);
+                            }
+                        }
+                    }
+                    
+                    for (Utilisateur u : lostUtilisateurs) {
+                        this.disconnectUtilisateurFromServeur(u);
                     }
                 }
             }
         }
     }
+    
+    /**
+     * Permet de déconnecter un utilisateur de la salle de chat
+     * 
+     * @param utilisateur 
+     */
+    private void disconnectUtilisateurFromChatRoom(Utilisateur utilisateur) {
+        synchronized (this.utilisateurs) {
+            String chatRoomName = this.utilisateurs.get(utilisateur);
+            
+            if (chatRoomName != null) {
+                synchronized (this.chatRooms) {
+                    this.chatRooms.get(chatRoomName).remove(utilisateur);
+                    
+                    this.sendMessageToRoom("Un utilisateur s'est déconnecté !", utilisateur);
+                    
+                    // Si il n'y a plus d'utilisateur dans la salle, on la supprime 
+                    if (this.chatRooms.get(chatRoomName).size() == 0) {
+                        this.chatRooms.remove(chatRoomName);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Permet de déconnecter un utilisateur
+     * 
+     * @param utilisateur 
+     */
+    private void disconnectUtilisateurFromServeur(Utilisateur utilisateur) {
+        synchronized (this.utilisateurs) {
+            this.disconnectUtilisateurFromChatRoom(utilisateur);
+            
+            this.utilisateurs.remove(utilisateur);
+        }
+    }
+    
+    // -------------------------------------------------------------------------
+    // Implémentation de l'interface
+    // -------------------------------------------------------------------------
     
     /**
      * L'utilisateur tante de créer un compte
@@ -98,20 +152,21 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public boolean createAccount(Utilisateur utilisateur) {
+        Boolean connected = false;
+        
         try {
-            if (this.serviceBd.createNewUser(this.getRmiUtilisateur(utilisateur))) {
-                synchronized (this.utilisateurs){
-                    this.utilisateurs.add(utilisateur);
-                }
-                this.sendMessageToAll(utilisateur.getName() + " vien de se connecter !", utilisateur);
-                return true;
-            } else {
-                return false;
-            }
+            connected = this.serviceBd.createNewUser(this.getRmiUtilisateur(utilisateur));
         } catch (RemoteException ex) {
             System.out.println(ex.toString());
-            return false;
         }
+        
+        if (connected) {
+            synchronized (this.utilisateurs) {
+                this.utilisateurs.put(utilisateur, null);
+            }
+        }
+        
+        return connected;
     }
     
     /**
@@ -122,20 +177,42 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public boolean authenticate(Utilisateur utilisateur) {
+        // Todo : tester si il n'est pas déjà connecté
+        
+        Boolean connected = false;
+        
         try {
-            if (this.serviceBd.authenticate(this.getRmiUtilisateur(utilisateur))) {
-                synchronized (this.utilisateurs) {
-                    this.utilisateurs.add(utilisateur);
-                }
-                this.sendMessageToAll(utilisateur.getName() + " vien de se connecter !", utilisateur);
-                return true;
-            } else {
-                return false;
-            }
+            connected = this.serviceBd.authenticate(this.getRmiUtilisateur(utilisateur));
         } catch (RemoteException ex) {
             System.out.println(ex.toString());
-            return false;
         }
+        
+        if (connected) {
+            synchronized (this.utilisateurs) {
+                this.utilisateurs.put(utilisateur, null);
+            }
+        }
+        
+        return connected;
+    }
+    
+    /**
+     * L'utilisateur veux récupérer la liste des sales de chat disponibles
+     * 
+     * @param utilisateur 
+     * @return  
+     */
+    @Override
+    public String getRoomList(Utilisateur utilisateur) {
+        String roomList = "";
+        
+        synchronized (this.chatRooms) {
+            for (String roomName : this.chatRooms.keySet()) {
+                roomList = roomList.concat("\n"+roomName);
+            }
+        }
+        
+        return roomList;
     }
     
     /**
@@ -147,7 +224,22 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public boolean createRoom(String roomName, Utilisateur utilisateur) {
-        return false;
+        this.disconnectUtilisateurFromChatRoom(utilisateur);
+        
+        synchronized (this.utilisateurs) {
+            synchronized (this.chatRooms) {
+                if (!this.chatRooms.containsKey(roomName)) {
+                    this.utilisateurs.put(utilisateur, roomName);
+                    ArrayList<Utilisateur> roomUsers = new ArrayList<>();
+                    roomUsers.add(utilisateur);
+                    this.chatRooms.put(roomName, roomUsers);
+                    return true;
+                } else {
+                    utilisateur.afficher("Erreur : Cette salle existe déjà !");
+                    return false;
+                }
+            }
+        }
     }
     
     /**
@@ -159,18 +251,36 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public boolean joinRoom(String roomName, Utilisateur utilisateur) {
-        return false;
+        this.disconnectUtilisateurFromChatRoom(utilisateur);
+        
+        synchronized (this.utilisateurs) {
+            synchronized (this.chatRooms) {
+                if (this.chatRooms.containsKey(roomName)) {
+                    this.utilisateurs.put(utilisateur, roomName);
+                    this.chatRooms.get(roomName).add(utilisateur);
+                    this.sendMessageToRoom(utilisateur.getName() + " vien de se connecter !", utilisateur);
+                    return true;
+                } else {
+                    utilisateur.afficher("Erreur : Cette salle n'existe pas !");
+                    return false;
+                }
+            }
+        }
     }
     
     /**
-     * L'utilisateur envoie un message au serveur
+     * L'utilisateur envoie un message au autres membres de sa salle de chat
      * 
      * @param message
      * @param utilisateur 
      */
     @Override
     public void sendMessage(String message, Utilisateur utilisateur) {
-        this.sendMessageToAll(utilisateur.getName() + " : " + message, utilisateur);
+        synchronized (this.utilisateurs) {            
+            if (this.utilisateurs.get(utilisateur) != null) {
+                this.sendMessageToRoom(utilisateur.getName() + " : " + message, utilisateur);
+            }
+        }
     }
     
     /**
@@ -181,7 +291,7 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public String getHistory(Utilisateur utilisateur) {
-        return "";
+        return "(not done)";
     }
     
     /**
@@ -191,9 +301,6 @@ public class ServiceServeurImpl extends ServiceServeurPOA {
      */
     @Override
     public void quit(Utilisateur utilisateur) {
-        synchronized (this.utilisateurs){
-            this.utilisateurs.remove(utilisateur);
-        }
-        this.sendMessageToAll(utilisateur.getName() + " s'est déconnecté !", utilisateur);
+        this.disconnectUtilisateurFromServeur(utilisateur);
     }
 }

@@ -10,6 +10,7 @@ module corbaInterface {
     interface ServiceServeur {
         boolean createAccount(in Utilisateur utilisateur);
         boolean authenticate(in Utilisateur utilisateur);
+        string getRoomList(in Utilisateur utilisateur);
         boolean createRoom(in string roomName, in Utilisateur utilisateur);
         boolean joinRoom(in string roomName, in Utilisateur utilisateur);
         void sendMessage(in string message, in Utilisateur utilisateur);

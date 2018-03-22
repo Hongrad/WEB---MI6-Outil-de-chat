@@ -16,6 +16,7 @@ import corbaInterface.UtilisateurHelper;
 public class Client {
     static final String PREFIX_FOR_CMD = "/";
     static final String HELP = "help";
+    static final String LIST_AVAILABLE_ROOM = "list";
     static final String CREATE_ROOM = "create";
     static final String JOIN_ROOM = "join";
     static final String GET_HISTORY = "hitory";
@@ -104,18 +105,21 @@ public class Client {
                     if (s.startsWith(HELP)) {
                         System.out.println("Liste des commandes :");
                         System.out.println(HELP);
-                        System.out.println(CREATE_ROOM + "'roomName' (not done)");
-                        System.out.println(JOIN_ROOM + "'roomName' (not done)");
+                        System.out.println(LIST_AVAILABLE_ROOM);
+                        System.out.println(CREATE_ROOM + "'roomName'");
+                        System.out.println(JOIN_ROOM + "'roomName'");
                         System.out.println(GET_HISTORY + " (not done)");
                         System.out.println(QUIT);
                         
-                    } else if (s.startsWith(CREATE_ROOM)) {
+                    } else if (s.startsWith(LIST_AVAILABLE_ROOM)) {
+                        System.out.println("Liste des salles :");
+                        System.out.println(serviceServeur.getRoomList(utilisateur));
+                        
+                    }else if (s.startsWith(CREATE_ROOM)) {
                         String roomName = s.replace(CREATE_ROOM, "").trim();
                         
                         if (serviceServeur.createRoom(roomName, utilisateur)){
                             System.out.println("La salle '" + roomName + "' a été créé !");
-                        }else{
-                            System.out.println(" Erreur : La sale n'a pas pu être créé ...");
                         }
                         
                     } else if (s.startsWith(JOIN_ROOM)) {
@@ -123,11 +127,10 @@ public class Client {
                         
                         if (serviceServeur.joinRoom(roomName, utilisateur)){
                             System.out.println("Vous avez rejoin la salle '" + roomName + "' !");
-                        }else{
-                            System.out.println(" Erreur : La sale '" + roomName + "' n'éxiste pas ...");
                         }
                         
                     } else if (s.startsWith(GET_HISTORY)) {
+                        System.out.println("Historique :");
                         System.out.println(serviceServeur.getHistory(utilisateur));
                         
                     } else if (s.startsWith(QUIT)) {
